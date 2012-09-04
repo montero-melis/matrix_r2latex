@@ -1,7 +1,7 @@
-# Converts matrix from R to LaTeX format
-# Using source code from mat2tex() function in "sfsmisc" package (avail. at CRAN)
+### Port to R and a few small improvements:
+### Copyright © 2000 Martin Maechler, ETH Zurich
 
-matrix_r2l <- function(x, file = "mat.tex",
+mat2tex <- function(x, file = "mat.tex",
                     nam.center = "l", col.center = "c",
                     append = TRUE, digits = 3, title)
 {
@@ -26,12 +26,12 @@ matrix_r2l <- function(x, file = "mat.tex",
     if(has.rowlabs)
         colspec <- paste(colspec, nam.center, "||")
     colspec <- paste(colspec, paste(col.center, "|", collapse=""), "}", sep = "")
-    cat(paste("\\begin{bmatrix}", colspec, " \n"), file = file, append = append)
+    cat(paste("\\begin{tabular}", colspec, " \n"), file = file, append = append)
 
     span <- nc.x + if(has.rowlabs) 1 else 0
     cat(if(!missing(title)) paste("\\multicolumn{", span,
                                   "}{c}{", title, "} \\\\"),
-        " \n", file = file, append = TRUE)
+        "\\hline \n", file = file, append = TRUE)
     ## output column labels if needed
     if(has.collabs) {
         collabline <- " "
@@ -40,7 +40,7 @@ matrix_r2l <- function(x, file = "mat.tex",
         collabline <- paste(collabline, collabs[1])
         for(i in c2ind)
             collabline <- paste(collabline, "&", collabs[i])
-        collabline <- paste(collabline, "\\\\  ")
+        collabline <- paste(collabline, "\\\\ \\hline \\hline")
         cat(collabline, "\n", file = file, append = TRUE)
     }
     ## output matrix entries
@@ -52,9 +52,10 @@ matrix_r2l <- function(x, file = "mat.tex",
         for(j in c2ind)
             thisline <- paste(thisline, "&", format(x[i, j]))
 
-        thisline <- paste(thisline, "\\\\ ")
+        thisline <- paste(thisline, "\\\\ \\hline")
         cat(paste(thisline, "\n"), file = file, append = TRUE)
     }
-    cat(paste("\\end{bmatrix}", " \n"), file = file, append = TRUE)
+    cat(paste("\\end{tabular}", " \n"), file = file, append = TRUE)
 }
+
 
